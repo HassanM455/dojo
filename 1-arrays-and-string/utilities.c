@@ -6,6 +6,8 @@
 #define INITIAL_SIZE 10 
 #define INT_RANGE 256
 
+void _print_space_btw_ans() {printf("\n\n\n"); }
+
 uint8_t* _alloc_uint8_array(uint8_t size) {
     
     uint8_t *array = (uint8_t*)calloc(size, sizeof(uint8_t));
