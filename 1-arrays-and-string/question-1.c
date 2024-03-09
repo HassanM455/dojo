@@ -24,6 +24,14 @@
 #define SIZEOF_UINT8 sizeof(uint8_t)
 
 
+typedef struct {
+  uint8_t size;
+  uint8_t* array;
+  uint8_t* (*add_elem)(uint8_t, uint8_t, uint8_t*, uint8_t) ;
+  void (*rm_elem)(uint8_t* , uint8_t , uint8_t ) ;  
+  uint8_t* (*reverse_array)(uint8_t*, uint8_t) ; 
+} MyUInt8Array ; 
+
 uint8_t* question_1__add_elem_to_array(
     uint8_t pos, uint8_t elem,
     uint8_t *arr, uint8_t size
