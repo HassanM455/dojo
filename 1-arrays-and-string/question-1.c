@@ -24,19 +24,28 @@
 #define SIZEOF_UINT8 sizeof(uint8_t)
 
 
-typedef struct {
+typedef struct MyUInt8Array {
   uint8_t size;
   uint8_t* array;
-  uint8_t* (*add_elem)(uint8_t, uint8_t, uint8_t*, uint8_t) ;
-  void (*rm_elem)(uint8_t* , uint8_t , uint8_t ) ;  
-  uint8_t* (*reverse_array)(uint8_t*, uint8_t) ; 
+  void (*add_elem)(uint8_t, uint8_t, struct MyUInt8Array*);
+  void (*rm_elem)(struct MyUInt8Array* , uint8_t ) ;  
+  void (*reverse_array)(struct MyUInt8Array*) ; 
 } MyUInt8Array ; 
 
-uint8_t* question_1__add_elem_to_array(
+typedef struct MyString {
+  char* string ;
+  int length ;
+  int (*get_length)(struct MyString*) ;
+  void (*reverse_string)(struct MyString*);
+} MyString ;
+
+void question_1__add_elem_to_array(
     uint8_t pos, uint8_t elem,
-    uint8_t *arr, uint8_t size
+    MyUInt8Array* arr_obj
 ) {
-  
+    
+    uint8_t size = arr_obj->size ;
+
     uint8_t new_size = size + 1 ; 
 
     uint8_t* new_arr = _alloc_uint8_array(new_size);
@@ -44,12 +53,12 @@ uint8_t* question_1__add_elem_to_array(
     size_t first_subset_bytes = (pos)*(SIZEOF_UINT8);
     size_t second_subset_bytes = (size - pos)*(SIZEOF_UINT8); 
 
-    uint8_t* arr_last_subset_ptr = arr + pos*(SIZEOF_UINT8) ; 
+    uint8_t* arr_last_subset_ptr = arr_obj->array + pos*(SIZEOF_UINT8) ; 
     uint8_t* newarr_last_subset_ptr = new_arr + (pos + 1)*(SIZEOF_UINT8);
 
     memcpy(
       new_arr, 
-      arr, 
+      arr_obj->array, 
       first_subset_bytes
     );
 
@@ -60,6 +69,9 @@ uint8_t* question_1__add_elem_to_array(
       arr_last_subset_ptr, 
       second_subset_bytes
     );
+
+    arr_obj->size = new_size ; 
+    arr_obj->array = new_arr ; 
 
 
 /*    
@@ -79,26 +91,30 @@ uint8_t* question_1__add_elem_to_array(
     } 
 */
 
-    return new_arr ; 
 }
 
-int question_1__get_string_len(char str[]) {
+int question_1__get_string_len(MyString *str_obj) {
     
     int str_len = 0 ; 
-    char character = *str ;  
+    char character = *(str_obj->string) ;  
 
     while(character != '\0') {
       str_len++ ;
-      character = *(str + str_len) ; 
+      character = *(str_obj->string + str_len) ; 
     }
+    
+    str_obj->length = str_len; 
 
     return str_len; 
 }
 
 void question_1__rm_elem_from_array(
-  uint8_t arr[], uint8_t size, uint8_t pos
+  MyUInt8Array* arr_obj, uint8_t pos
 ) {
   
+  uint8_t size = arr_obj->size ;
+  uint8_t* arr = arr_obj->array ; 
+
   memcpy(
       arr + (pos)*SIZEOF_UINT8, 
       arr + (pos + 1)*SIZEOF_UINT8,
@@ -108,27 +124,31 @@ void question_1__rm_elem_from_array(
   *(arr + (size - 1)*SIZEOF_UINT8) = 0;
 }
 
-uint8_t* question_1__reverse_array(uint8_t arr[], uint8_t size) {
-    
+void question_1__reverse_array(MyUInt8Array *arr_obj) {
+   
+    uint8_t size = arr_obj->size ; 
     uint8_t *new_array = _alloc_uint8_array(size) ; 
-
+    
     for(int i = 0; i < size; i++) {
-      *(new_array + (size - i - 1)) = *(arr + i) ; 
+      *(new_array + (size - i - 1)) = *(arr_obj->array + i) ; 
     }
 
-    return new_array ; 
+    arr_obj->array = new_array ; 
 
 }
  
-void question_1__reverse_string(char* str, uint8_t str_len) {
+void question_1__reverse_string(MyString *str_obj) {
 
-    char temp[str_len] ; 
+    int str_len = str_obj->get_length(str_obj);
+    char* temp = _alloc_char_array((uint8_t)str_len);
+
 
     for(int i = 0 ; i <= str_len  ; i++) {
-      temp[i] = *(str + str_len - 1 - i);
+      *(temp + i) = *(str_obj->string + str_len - 1 - i);
     }
 
-    strcpy(str, temp);  
+
+    str_obj->string = (char* )temp ;   
 }
 
 int main(int argc, char *argv[]) {
@@ -144,63 +164,71 @@ int main(int argc, char *argv[]) {
     \n"
     );
 
+    MyUInt8Array uint8_arr ; 
+    uint8_arr.size = INITIAL_SIZE ;
+    uint8_arr.array = _generate_array(INITIAL_SIZE); 
+    uint8_arr.add_elem = question_1__add_elem_to_array ; 
+    uint8_arr.rm_elem = question_1__rm_elem_from_array ; 
+    uint8_arr.reverse_array = question_1__reverse_array ; 
+
+    MyString my_str ; 
+    my_str.string = "Hello world";;
+    my_str.get_length = question_1__get_string_len ; 
+    my_str.reverse_string = question_1__reverse_string ; 
+
     //  An operation to add and remove elements from an array.   
     uint8_t insertion_point = 6;
     uint8_t insertion_value = (uint8_t) ( rand() % INT_RANGE) ; 
 
-    uint8_t *first_arr = _generate_array(INITIAL_SIZE);
-
-    uint8_t new_size = INITIAL_SIZE + 1 ; 
-
-    _print_array(first_arr, INITIAL_SIZE) ;
+    _print_array(uint8_arr.array, INITIAL_SIZE) ;
     
     _print_space_btw_ans() ; 
 
     printf("Inserting %d into index %d \n", insertion_value, insertion_point);
-    uint8_t *new_array = question_1__add_elem_to_array(
-      insertion_point, insertion_value, first_arr, INITIAL_SIZE
+    uint8_arr.add_elem(
+      insertion_point, insertion_value, 
+      &uint8_arr
     );
 
-    _print_array(new_array, new_size) ; 
+    _print_array(uint8_arr.array, uint8_arr.size) ; 
 
     _print_space_btw_ans() ; 
 
     printf("Removing %d from index %d \n", insertion_value, insertion_point);
-    question_1__rm_elem_from_array(new_array, new_size, insertion_point );
+    uint8_arr.rm_elem(&uint8_arr, insertion_point );
 
-    _print_array(new_array, new_size);
+    _print_array(uint8_arr.array, uint8_arr.size);
 
     _print_space_btw_ans();
 
-    // A function to find the length of a String.  
-    
-    char my_string[] = "Hello world";
-
-    int string_len = question_1__get_string_len(my_string); 
-
-    printf("Here is my string '%s' of length %d \n", my_string, string_len);
-    
-    _print_space_btw_ans() ; 
-
-    // A function to reverse an array and a String.   
+    // A function to reverse an array.   
     
     printf("Here is the same array in reverse order: ");
 
-    new_array = question_1__reverse_array(new_array, new_size);
+    uint8_arr.reverse_array(&uint8_arr) ; 
+
+    _print_array(uint8_arr.array, uint8_arr.size) ; 
+
+    _print_space_btw_ans() ;
+
+    // A function to find the length of a String.  
+
+    int string_len = my_str.get_length(&my_str);
+
+    printf("Here is my string '%s' of length %d \n", my_str.string, string_len);
+
+    _print_space_btw_ans() ;
+   
+    // A function to reverse a string.
     
-    _print_array(new_array, new_size) ; 
-
-    _print_space_btw_ans() ; 
-
-
     printf("Here is the same string in reverse order: ");
 
-    question_1__reverse_string(my_string, string_len) ; 
+    my_str.reverse_string(&my_str) ; 
 
-    printf("%s \n", my_string) ; 
+    printf("%s \n", my_str.string) ; 
   
     _print_space_btw_ans() ; 
-  
+ 
     return 0; 
 
 }

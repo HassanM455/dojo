@@ -20,6 +20,17 @@ uint8_t* _alloc_uint8_array(uint8_t size) {
     return array ; 
 }
 
+char* _alloc_char_array(uint8_t size) {
+
+    char* string = (char *)malloc(size*sizeof(char));
+
+    while(string == NULL) {
+      string = (char *)malloc(size*sizeof(char));
+    }
+
+    return string;
+}
+
 uint8_t* _generate_array(uint8_t size) {
 
      
