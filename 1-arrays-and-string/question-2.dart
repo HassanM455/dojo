@@ -153,7 +153,7 @@ class FindSubstringParser {
     FindSubstringParser(this.searchString, this.subString, this.expected); 
 
     void findSubstringIndex() {
-      for (int i = 0 ; i < (searchString.length - subString.length ); i++) {
+      for (int i = 0 ; i <= (searchString.length - subString.length ); i++) {
         
         for (int j = 0 ; j < subString.length; j++) {
           if (subString[j] != searchString[i + j]) {            
