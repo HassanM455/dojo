@@ -70,7 +70,11 @@ void question_1__add_elem_to_array(
       second_subset_bytes
     );
 
-    arr_obj->size = new_size ; 
+    arr_obj->size = new_size ;
+
+    if (arr_obj->array != NULL){
+      free(arr_obj->array);
+    }
     arr_obj->array = new_arr ; 
 
 
@@ -133,6 +137,7 @@ void question_1__reverse_array(MyUInt8Array *arr_obj) {
       *(new_array + (size - i - 1)) = *(arr_obj->array + i) ; 
     }
 
+    free(arr_obj->array);
     arr_obj->array = new_array ; 
 
 }
@@ -143,10 +148,26 @@ void question_1__reverse_string(MyString *str_obj) {
     char* temp = _alloc_char_array((uint8_t)str_len);
 
 
+    char curr_char = *(str_obj->string) ;
+    char* end_of_revstr_addr = temp + (str_len - 1)*sizeof(char);
+    int i = 0 ;
+
+    while(curr_char != '\0'){
+      *(end_of_revstr_addr - i*sizeof(char)) = curr_char ; 
+      curr_char = *(str_obj->string + (i+1)*sizeof(char)); // next character
+      i++ ; 
+    }
+
+    *(temp + str_len*sizeof(char)) = '\0' ; 
+
+    /*
     for(int i = 0 ; i <= str_len  ; i++) {
       *(temp + i) = *(str_obj->string + str_len - 1 - i);
     }
-
+    */
+    if (str_obj->string != NULL) {
+        free(str_obj->string);
+    }
 
     str_obj->string = (char* )temp ;   
 }
@@ -171,10 +192,13 @@ int main(int argc, char *argv[]) {
     uint8_arr.rm_elem = question_1__rm_elem_from_array ; 
     uint8_arr.reverse_array = question_1__reverse_array ; 
 
+    char* textline = _alloc_char_array((uint8_t)20);
+    strcpy(textline, "Hello World, I am a string");
     MyString my_str ; 
-    my_str.string = "Hello world";;
+    my_str.string = textline ;
     my_str.get_length = question_1__get_string_len ; 
-    my_str.reverse_string = question_1__reverse_string ; 
+    my_str.reverse_string = question_1__reverse_string ;
+    my_str.get_length(&my_str); 
 
     //  An operation to add and remove elements from an array.   
     uint8_t insertion_point = 6;
