@@ -1,22 +1,22 @@
 #include <stdio.h>
 #include "../1-arrays-and-string/utilities.c"
 
-typedef struct Node {
+struct Node {
   struct Node *next;
   int value;
-} Node ; 
+} ; 
 
-typedef struct LinkedList {
+struct LinkedList {
   struct Node* head;
   struct Node* current ; 
   void (*iter_next)(struct LinkedList* ) ;
   void (*make_ll)(struct LinkedList*, int[], int);
   void (*traverse_ll)(struct LinkedList*); 
-} LinkedList ; 
+} ; 
 
 void iter_next(struct LinkedList* ll) {
 
-  Node *node = (ll->current)->next ;
+  struct Node *node = (ll->current)->next ;
   if (node == NULL) {
     ll->current = NULL ; 
     return ;
@@ -28,14 +28,14 @@ void iter_next(struct LinkedList* ll) {
 void make_ll(struct LinkedList *ll, int values[], int size){
 
   int value ; 
-  struct Node *head = (struct Node*)malloc(sizeof(Node)); 
+  struct Node *head = (struct Node*)malloc(sizeof(ll->head)); 
   head->value = values[0];
   ll->head = head ;
   ll->current = head ; 
   struct Node *n; 
 
   for(int i = 1 ; i < size; i++) {
-    n = (struct Node*)malloc(sizeof(Node));
+    n = (struct Node*)malloc(sizeof(ll->head));
     n->next = NULL ; 
     n->value = values[i];
     (ll->current)->next = n; // setting current node's next to new node
