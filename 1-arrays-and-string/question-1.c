@@ -24,24 +24,24 @@
 #define SIZEOF_UINT8 sizeof(uint8_t)
 
 
-typedef struct MyUInt8Array {
+struct MyUInt8Array {
   uint8_t size;
   uint8_t* array;
   void (*add_elem)(uint8_t, uint8_t, struct MyUInt8Array*);
   void (*rm_elem)(struct MyUInt8Array* , uint8_t ) ;  
   void (*reverse_array)(struct MyUInt8Array*) ; 
-} MyUInt8Array ; 
+} ; 
 
-typedef struct MyString {
+struct MyString {
   char* string ;
   int length ;
   int (*get_length)(struct MyString*) ;
   void (*reverse_string)(struct MyString*);
-} MyString ;
+} ;
 
 void question_1__add_elem_to_array(
     uint8_t pos, uint8_t elem,
-    MyUInt8Array* arr_obj
+    struct MyUInt8Array* arr_obj
 ) {
     
     uint8_t size = arr_obj->size ;
@@ -97,7 +97,7 @@ void question_1__add_elem_to_array(
 
 }
 
-int question_1__get_string_len(MyString *str_obj) {
+int question_1__get_string_len(struct MyString *str_obj) {
     
     int str_len = 0 ; 
     char character = *(str_obj->string) ;  
@@ -113,7 +113,7 @@ int question_1__get_string_len(MyString *str_obj) {
 }
 
 void question_1__rm_elem_from_array(
-  MyUInt8Array* arr_obj, uint8_t pos
+  struct MyUInt8Array* arr_obj, uint8_t pos
 ) {
   
   uint8_t size = arr_obj->size ;
@@ -128,7 +128,7 @@ void question_1__rm_elem_from_array(
   *(arr + (size - 1)*SIZEOF_UINT8) = 0;
 }
 
-void question_1__reverse_array(MyUInt8Array *arr_obj) {
+void question_1__reverse_array(struct MyUInt8Array *arr_obj) {
    
     uint8_t size = arr_obj->size ; 
     uint8_t *new_array = _alloc_uint8_array(size) ; 
@@ -142,7 +142,7 @@ void question_1__reverse_array(MyUInt8Array *arr_obj) {
 
 }
  
-void question_1__reverse_string(MyString *str_obj) {
+void question_1__reverse_string(struct MyString *str_obj) {
 
     int str_len = str_obj->get_length(str_obj);
     char* temp = _alloc_char_array((uint8_t)str_len);
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
     \n"
     );
 
-    MyUInt8Array uint8_arr ; 
+    struct MyUInt8Array uint8_arr ; 
     uint8_arr.size = INITIAL_SIZE ;
     uint8_arr.array = _generate_array(INITIAL_SIZE); 
     uint8_arr.add_elem = question_1__add_elem_to_array ; 
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
 
     char* textline = _alloc_char_array((uint8_t)20);
     strcpy(textline, "Hello World, I am a string");
-    MyString my_str ; 
+    struct MyString my_str ; 
     my_str.string = textline ;
     my_str.get_length = question_1__get_string_len ; 
     my_str.reverse_string = question_1__reverse_string ;
