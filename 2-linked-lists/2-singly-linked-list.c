@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "../1-arrays-and-string/utilities.c"
 
+
 struct Node {
   struct Node *next;
   int value;
